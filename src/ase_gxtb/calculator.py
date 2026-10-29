@@ -40,8 +40,10 @@ class GXTB(Calculator):
     ----------
     charge : int
         Total charge of the system (default 0).
-    uhf : int
-        Number of unpaired electrons, passed as ``--uhf`` (default 0).
+    uhf : int or None
+        Number of unpaired electrons, passed as ``--uhf`` (default None).
+        If None, ``--uhf`` is omitted, allowing closed-shell treatment
+        when applicable.
     maxiter : int
         Maximum SCF iterations, passed as ``--iterations`` (default 250).
     keep_files : bool
@@ -56,7 +58,7 @@ class GXTB(Calculator):
 
     default_parameters = dict(
         charge=0,
-        uhf=0,
+        uhf=None,
         maxiter=250,
         keep_files=True,
         binary_path=None,
@@ -114,9 +116,10 @@ class GXTB(Calculator):
             "--gxtb",
             "--grad",
             "--chrg", str(self.parameters.charge),
-            "--uhf",  str(self.parameters.uhf),
             "--iterations", str(self.parameters.maxiter),
         ]
+        if self.parameters.uhf is not None:
+            cmd += ["--uhf",  str(self.parameters.uhf)]
 
         log.debug("xtb command: %s", " ".join(cmd))
 
